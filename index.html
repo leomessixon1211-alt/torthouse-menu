@@ -2,11 +2,129 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tort House Menu</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff8f1;
+      color: #2b160d;
+    }
+
+    .hero {
+      padding: 28px 18px;
+      background: linear-gradient(135deg, #3b1f14, #8b4a2f);
+      color: white;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 34px;
+    }
+
+    .hero p {
+      margin-top: 8px;
+      color: #ffe1c7;
+    }
+
+    .search {
+      margin: 18px;
+    }
+
+    .search input {
+      width: 100%;
+      padding: 15px;
+      border-radius: 16px;
+      border: none;
+      font-size: 16px;
+      box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 18px;
+      padding: 18px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+
+    .card img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 16px;
+    }
+
+    .category {
+      font-size: 13px;
+      color: #a36b48;
+      font-weight: bold;
+    }
+
+    .card h2 {
+      margin: 7px 0;
+      font-size: 21px;
+    }
+
+    .card p {
+      color: #6b5145;
+      font-size: 14px;
+    }
+
+    .price {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 12px;
+      color: #7a351f;
+    }
+
+    .btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 14px;
+      background: #3b1f14;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .loading {
+      padding: 30px;
+      text-align: center;
+      font-size: 18px;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Tort House Menu</h1>
-  <div id="menu">Yuklanmoqda...</div>
+
+  <div class="hero">
+    <h1>Tort House</h1>
+    <p>Shirin lahzalar shu yerdan boshlanadi</p>
+  </div>
+
+  <div class="search">
+    <input id="searchInput" type="text" placeholder="Mahsulot qidirish..." />
+  </div>
+
+  <div id="products" class="products">
+    <div class="loading">Menu yuklanmoqda...</div>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -18,45 +136,68 @@
       projectId: "tort-house",
       storageBucket: "tort-house.firebasestorage.app",
       messagingSenderId: "531646484923",
-      appId: "1:531646484923:web:e40a50fabf50519d9ab49e",
-      measurementId: "G-X8QXT821B1"
+      appId: "1:531646484923:web:e40a50fabf50519d9ab49e"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const menuDiv = document.getElementById("menu");
+
+    const productsDiv = document.getElementById("products");
+    const searchInput = document.getElementById("searchInput");
+
+    let products = [];
 
     async function loadProducts() {
-      try {
-        const querySnapshot = await getDocs(collection(db, "products"));
+      const querySnapshot = await getDocs(collection(db, "products"));
+      products = [];
 
-        if (querySnapshot.empty) {
-          menuDiv.innerHTML = "Mahsulot topilmadi";
-          return;
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.available !== false) {
+          products.push(data);
         }
+      });
 
-        menuDiv.innerHTML = "";
-
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-
-          menuDiv.innerHTML += `
-            <div style="border:1px solid #ddd; padding:15px; margin:15px; border-radius:10px;">
-              <h2>${data.name}</h2>
-              <img src="${data.image}" style="width:200px; max-width:100%; border-radius:10px;" />
-              <p>${data.description}</p>
-              <h3>${data.price} so'm</h3>
-              <p>Kategoriya: ${data.category}</p>
-            </div>
-          `;
-        });
-      } catch (error) {
-        menuDiv.innerHTML = "Xatolik: " + error.message;
-        console.error(error);
-      }
+      renderProducts(products);
     }
+
+    function renderProducts(items) {
+      if (items.length === 0) {
+        productsDiv.innerHTML = `<div class="loading">Mahsulot topilmadi</div>`;
+        return;
+      }
+
+      productsDiv.innerHTML = "";
+
+      items.forEach((item) => {
+        productsDiv.innerHTML += `
+          <div class="card">
+            <img src="${item.image}" alt="${item.name}">
+            <div class="card-content">
+              <div class="category">${item.category || "Shirinlik"}</div>
+              <h2>${item.name}</h2>
+              <p>${item.description || ""}</p>
+              <div class="price">${Number(item.price).toLocaleString()} so'm</div>
+              <button class="btn">Kassirga ko‘rsatish</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    searchInput.addEventListener("input", () => {
+      const value = searchInput.value.toLowerCase();
+
+      const filtered = products.filter(item =>
+        item.name.toLowerCase().includes(value) ||
+        item.category.toLowerCase().includes(value)
+      );
+
+      renderProducts(filtered);
+    });
 
     loadProducts();
   </script>
+
 </body>
 </html>
