@@ -1,579 +1,247 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tort House Menu</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tort House Menu</title>
 
-  <style>
-    :root {
-      --burgundy: #76001f;
-      --burgundy-2: #4b0014;
-      --cream: #fff7ec;
-      --cream-2: #f7eadc;
-      --card: #fffdf9;
-      --text: #2d1810;
-      --muted: #8d7568;
-      --gold: #c7a24a;
-      --line: rgba(118, 0, 31, .12);
-      --shadow: 0 18px 45px rgba(54, 24, 13, .10);
-    }
+<style>
+:root{
+--burgundy:#76001f;
+--cream:#fff7ec;
+--card:#fffdf9;
+--text:#2d1810;
+--muted:#8d7568;
+--gold:#c7a24a;
+--line:rgba(118,0,31,.12);
+}
 
-    * { box-sizing: border-box; }
+body{
+margin:0;
+font-family:Inter,system-ui;
+background:var(--cream);
+color:var(--text);
+}
 
-    body {
-      margin: 0;
-      background:
-        radial-gradient(circle at top left, rgba(199,162,74,.18), transparent 32%),
-        linear-gradient(180deg, #fffaf3, var(--cream));
-      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      color: var(--text);
-      overflow-x: hidden;
-    }
+/* splash */
+#splash{
+position:fixed;
+inset:0;
+background:var(--burgundy);
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:999;
+transition:.3s;
+}
 
-    #splash {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: radial-gradient(circle, #9a1033 0%, var(--burgundy-2) 70%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity .25s ease;
-    }
+.splash-box{text-align:center;}
+.splash-box img{width:120px;}
+.splash-box p{color:#fff;margin-top:8px;}
 
-    .splash-box {
-      text-align: center;
-      animation: splashZoom .45s ease both;
-    }
+.app{opacity:0;transition:.3s;}
+.app.show{opacity:1;}
 
-    .splash-box img {
-      width: 150px;
-      height: 150px;
-      object-fit: contain;
-      filter: drop-shadow(0 18px 25px rgba(0,0,0,.25));
-    }
+/* header */
+header{
+background:var(--burgundy);
+color:white;
+padding:20px;
+border-radius:0 0 30px 30px;
+}
 
-    .splash-box p {
-      color: #fff6e8;
-      font-size: 21px;
-      margin: 8px 0 0;
-      font-family: Georgia, serif;
-      font-style: italic;
-    }
+/* grid */
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:16px;
+padding:16px;
+}
 
-    @keyframes splashZoom {
-      from { opacity: 0; transform: scale(.88) translateY(10px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
+.card{
+background:white;
+border-radius:18px;
+overflow:hidden;
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+transition:.2s;
+}
 
-    .app {
-      opacity: 0;
-      transition: opacity .28s ease;
-    }
+.card:hover{transform:translateY(-4px);}
 
-    .app.show { opacity: 1; }
+.card img{
+width:100%;
+height:180px;
+object-fit:cover;
+}
 
-    .hero {
-      min-height: 250px;
-      background:
-        linear-gradient(135deg, rgba(118,0,31,.94), rgba(75,0,20,.96)),
-        url("https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=1600") center/cover;
-      color: white;
-      border-bottom-left-radius: 36px;
-      border-bottom-right-radius: 36px;
-      position: relative;
-      overflow: hidden;
-    }
+.card-body{padding:12px;}
 
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: auto -80px -120px auto;
-      width: 280px;
-      height: 280px;
-      border-radius: 50%;
-      background: rgba(199,162,74,.18);
-      filter: blur(3px);
-    }
+.price{color:var(--burgundy);font-weight:900;}
 
-    .hero-inner {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 22px 18px 78px;
-      position: relative;
-      z-index: 1;
-    }
+@media(max-width:900px){
+.grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:600px){
+.grid{grid-template-columns:1fr;}
+}
 
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+/* FEEDBACK */
+.feedback{
+margin:20px;
+padding:20px;
+background:white;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,.05);
+}
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+.rating button{
+font-size:26px;
+border:none;
+background:none;
+cursor:pointer;
+opacity:.4;
+}
 
-    .brand img {
-      width: 66px;
-      height: 66px;
-      object-fit: contain;
-      background: rgba(255,255,255,.95);
-      border-radius: 18px;
-      padding: 4px;
-      box-shadow: 0 14px 30px rgba(0,0,0,.18);
-    }
+.rating button.active{opacity:1;}
 
-    .brand h1 {
-      margin: 0;
-      font-family: Georgia, serif;
-      font-size: 32px;
-      letter-spacing: .4px;
-    }
+.quick button{
+margin:5px;
+padding:8px 12px;
+border-radius:12px;
+border:1px solid #ddd;
+background:#fafafa;
+cursor:pointer;
+}
 
-    .brand p {
-      margin: 4px 0 0;
-      color: rgba(255,255,255,.76);
-      font-size: 13px;
-    }
+textarea{
+width:100%;
+margin-top:10px;
+padding:10px;
+border-radius:12px;
+border:1px solid #ddd;
+}
 
-    .badge {
-      border: 1px solid rgba(255,255,255,.22);
-      background: rgba(255,255,255,.10);
-      backdrop-filter: blur(12px);
-      padding: 10px 15px;
-      border-radius: 999px;
-      font-size: 13px;
-      color: #fff4e7;
-    }
+.send{
+margin-top:10px;
+width:100%;
+padding:12px;
+background:var(--burgundy);
+color:white;
+border:none;
+border-radius:14px;
+}
 
-    .headline {
-      margin-top: 42px;
-      max-width: 620px;
-    }
-
-    .headline h2 {
-      margin: 0;
-      font-family: Georgia, serif;
-      font-size: clamp(34px, 5vw, 62px);
-      line-height: .98;
-    }
-
-    .headline p {
-      margin: 14px 0 0;
-      max-width: 480px;
-      color: rgba(255,255,255,.76);
-      font-size: 16px;
-      line-height: 1.6;
-    }
-
-    .panel {
-      max-width: 1180px;
-      margin: -48px auto 0;
-      padding: 0 18px;
-      position: relative;
-      z-index: 5;
-    }
-
-    .glass {
-      background: rgba(255,255,255,.82);
-      backdrop-filter: blur(18px);
-      border: 1px solid rgba(255,255,255,.8);
-      box-shadow: var(--shadow);
-      border-radius: 26px;
-      padding: 16px;
-    }
-
-    .search {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 13px 15px;
-    }
-
-    .search span {
-      color: var(--burgundy);
-      font-size: 18px;
-    }
-
-    .search input {
-      width: 100%;
-      border: none;
-      outline: none;
-      font-size: 16px;
-      background: transparent;
-      color: var(--text);
-    }
-
-    .chips {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding: 14px 2px 2px;
-      scrollbar-width: none;
-    }
-
-    .chips::-webkit-scrollbar { display: none; }
-
-    .chip {
-      position: relative;
-      border: 1px solid var(--line);
-      background: #fff;
-      color: var(--text);
-      border-radius: 999px;
-      padding: 11px 18px;
-      font-weight: 800;
-      font-size: 14px;
-      white-space: nowrap;
-      cursor: pointer;
-      transition: transform .22s ease, box-shadow .22s ease, background .22s ease, color .22s ease;
-    }
-
-    .chip:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 22px rgba(118,0,31,.10);
-    }
-
-    .chip.active {
-      background: var(--burgundy);
-      color: white;
-      border-color: var(--burgundy);
-      box-shadow: 0 12px 25px rgba(118,0,31,.22);
-    }
-
-    .container {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 28px 18px 60px;
-    }
-
-    .section-title {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      margin-bottom: 18px;
-    }
-
-    .section-title h3 {
-      margin: 0;
-      font-family: Georgia, serif;
-      font-size: 30px;
-      color: var(--burgundy-2);
-    }
-
-    .section-title p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid rgba(118,0,31,.10);
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: 0 12px 30px rgba(54, 24, 13, .06);
-      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
-      position: relative;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 25px 55px rgba(54, 24, 13, .13);
-      border-color: rgba(118,0,31,.22);
-    }
-
-    .img-wrap {
-      position: relative;
-      height: 185px;
-      overflow: hidden;
-      background: var(--cream-2);
-    }
-
-    .img-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform .45s ease;
-      display: block;
-    }
-
-    .card:hover .img-wrap img {
-      transform: scale(1.06);
-    }
-
-    .category {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      background: rgba(255,255,255,.86);
-      backdrop-filter: blur(10px);
-      color: var(--burgundy);
-      font-weight: 900;
-      font-size: 11px;
-      letter-spacing: .9px;
-      text-transform: uppercase;
-      border-radius: 999px;
-      padding: 8px 11px;
-    }
-
-    .content {
-      padding: 16px;
-    }
-
-    .row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
-    }
-
-    .row h4 {
-      margin: 0;
-      font-family: Georgia, serif;
-      font-size: 22px;
-      line-height: 1.12;
-      color: var(--text);
-    }
-
-    .price {
-      color: var(--burgundy);
-      background: rgba(118,0,31,.07);
-      padding: 8px 10px;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 950;
-      white-space: nowrap;
-    }
-
-    .desc {
-      margin: 12px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.55;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .status {
-      text-align: center;
-      padding: 55px 0;
-      color: var(--muted);
-      font-size: 16px;
-    }
-
-    .skeleton {
-      background: linear-gradient(90deg, #fff, #f3e6da, #fff);
-      background-size: 200% 100%;
-      animation: shimmer 1s infinite linear;
-      min-height: 280px;
-      border-radius: 24px;
-    }
-
-    @keyframes shimmer {
-      to { background-position: -200% 0; }
-    }
-
-    @media (max-width: 900px) {
-      .grid { grid-template-columns: repeat(2, 1fr); }
-      .badge { display: none; }
-    }
-
-    @media (max-width: 560px) {
-      .hero { min-height: 230px; border-bottom-left-radius: 28px; border-bottom-right-radius: 28px; }
-      .hero-inner { padding: 16px 14px 68px; }
-      .brand img { width: 58px; height: 58px; border-radius: 16px; }
-      .brand h1 { font-size: 26px; }
-      .headline { margin-top: 32px; }
-      .headline h2 { font-size: 34px; }
-      .headline p { font-size: 14px; }
-      .glass { border-radius: 22px; padding: 13px; }
-      .container { padding-top: 24px; }
-      .section-title { align-items: flex-start; flex-direction: column; gap: 4px; }
-      .section-title h3 { font-size: 27px; }
-      .grid { grid-template-columns: 1fr; gap: 16px; }
-      .img-wrap { height: 178px; }
-      .card { border-radius: 22px; }
-      .row h4 { font-size: 21px; }
-      .splash-box img { width: 130px; height: 130px; }
-    }
-  </style>
+</style>
 </head>
 
 <body>
-  <div id="splash">
-    <div class="splash-box">
-      <img src="logo.png" alt="Tort House Logo">
-      <p>Mehr bilan!</p>
-    </div>
-  </div>
 
-  <div id="app" class="app">
-    <section class="hero">
-      <div class="hero-inner">
-        <div class="nav">
-          <div class="brand">
-            <img src="logo.png" alt="Tort House Logo">
-            <div>
-              <h1>Tort House</h1>
-              <p>Shirinliklar showroom menyusi</p>
-            </div>
-          </div>
-          <div class="badge">QR Online Menu</div>
-        </div>
+<div id="splash">
+<div class="splash-box">
+<img src="logo.png">
+<p>Mehr bilan!</p>
+</div>
+</div>
 
-        <div class="headline">
-          <h2>Shirin lahzalar shu yerdan boshlanadi</h2>
-          <p>Mahsulotlarni ko‘ring, narxlar bilan tanishing va kassirga kerakli shirinlik nomini ayting.</p>
-        </div>
-      </div>
-    </section>
+<div id="app" class="app">
 
-    <section class="panel">
-      <div class="glass">
-        <div class="search">
-          <span>⌕</span>
-          <input id="searchInput" type="text" placeholder="Tort, pirojniy yoki ichimlik qidirish..." />
-        </div>
-        <div id="categories" class="chips"></div>
-      </div>
-    </section>
+<header>
+<h2>Tort House</h2>
+<p>Shirin lahzalar shu yerdan boshlanadi</p>
+</header>
 
-    <main class="container">
-      <div class="section-title">
-        <h3>Menu</h3>
-        <p>Bugungi mavjud mahsulotlar</p>
-      </div>
+<div id="grid" class="grid"></div>
 
-      <div id="status" class="status">Menu yuklanmoqda...</div>
+<!-- FEEDBACK -->
+<div class="feedback">
+<h3>Xizmatimizni baholang</h3>
 
-      <div id="grid" class="grid">
-        <div class="skeleton"></div>
-        <div class="skeleton"></div>
-        <div class="skeleton"></div>
-      </div>
-    </main>
-  </div>
+<div class="rating" id="rating">
+<button data="1">🍰</button>
+<button data="2">🍰</button>
+<button data="3">🍰</button>
+<button data="4">🍰</button>
+<button data="5">🍰</button>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<div class="quick">
+<button data="Mazali">Mazali</button>
+<button data="Yaxshi xizmat">Xizmat yaxshi</button>
+<button data="Tez xizmat">Tez xizmat</button>
+<button data="Narx yaxshi">Narx yaxshi</button>
+<button data="Yana kelaman">Yana kelaman</button>
+</div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCsx23vnQ4jvGv0reltApc4fEvhF9VHKIU",
-      authDomain: "tort-house.firebaseapp.com",
-      projectId: "tort-house",
-      storageBucket: "tort-house.firebasestorage.app",
-      messagingSenderId: "531646484923",
-      appId: "1:531646484923:web:e40a50fabf50519d9ab49e"
-    };
+<textarea id="comment" placeholder="Fikringizni yozing..."></textarea>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+<button class="send" onclick="sendReview()">Yuborish</button>
+</div>
 
-    const splash = document.getElementById("splash");
-    const appDiv = document.getElementById("app");
-    const grid = document.getElementById("grid");
-    const status = document.getElementById("status");
-    const searchInput = document.getElementById("searchInput");
-    const categoriesDiv = document.getElementById("categories");
+</div>
 
-    let products = [];
-    let activeCategory = "Hammasi";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    setTimeout(() => {
-      splash.style.opacity = "0";
-      setTimeout(() => {
-        splash.style.display = "none";
-        appDiv.classList.add("show");
-      }, 250);
-    }, 500);
+const firebaseConfig={
+apiKey:"AIzaSyCsx23vnQ4jvGv0reltApc4fEvhF9VHKIU",
+authDomain:"tort-house.firebaseapp.com",
+projectId:"tort-house",
+};
 
-    const q = query(collection(db, "products"), where("available", "==", true));
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
 
-    onSnapshot(q, (snapshot) => {
-      products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderCategories();
-      renderProducts();
-    }, (error) => {
-      grid.innerHTML = "";
-      status.style.display = "block";
-      status.textContent = "Xatolik: " + error.message;
-    });
+let rating=0;
+let quick="";
 
-    function renderCategories() {
-      const cats = ["Hammasi", ...new Set(products.map(p => p.category).filter(Boolean))];
+document.querySelectorAll(".rating button").forEach(b=>{
+b.onclick=()=>{
+rating=b.dataset;
+document.querySelectorAll(".rating button").forEach(x=>x.classList.remove("active"));
+b.classList.add("active");
+};
+});
 
-      categoriesDiv.innerHTML = cats.map(cat => `
-        <button class="chip ${cat === activeCategory ? "active" : ""}" data-category="${cat}">
-          ${cat}
-        </button>
-      `).join("");
+document.querySelectorAll(".quick button").forEach(b=>{
+b.onclick=()=>{
+quick=b.dataset;
+};
+});
 
-      document.querySelectorAll(".chip").forEach(btn => {
-        btn.addEventListener("click", () => {
-          activeCategory = btn.dataset.category;
-          renderCategories();
-          renderProducts();
-        });
-      });
-    }
+window.sendReview=async()=>{
+await addDoc(collection(db,"reviews"),{
+rating:Number(rating),
+quick,
+comment:document.getElementById("comment").value,
+createdAt:serverTimestamp()
+});
+alert("Rahmat!");
+};
 
-    function renderProducts() {
-      const search = searchInput.value.toLowerCase().trim();
+onSnapshot(collection(db,"products"),snap=>{
+const grid=document.getElementById("grid");
+grid.innerHTML="";
+snap.forEach(doc=>{
+const d=doc.data();
+if(d.available!==false){
+grid.innerHTML+=`
+<div class="card">
+<img src="${d.image}">
+<div class="card-body">
+<h4>${d.name}</h4>
+<div class="price">${d.price} so'm</div>
+</div>
+</div>`;
+}
+});
+});
 
-      const filtered = products.filter(p => {
-        const name = (p.name || "").toLowerCase();
-        const desc = (p.description || "").toLowerCase();
-        const cat = (p.category || "").toLowerCase();
+setTimeout(()=>{
+document.getElementById("splash").style.display="none";
+document.getElementById("app").classList.add("show");
+},500);
+</script>
 
-        const matchSearch = name.includes(search) || desc.includes(search) || cat.includes(search);
-        const matchCat = activeCategory === "Hammasi" || p.category === activeCategory;
-
-        return matchSearch && matchCat;
-      });
-
-      if (!filtered.length) {
-        grid.innerHTML = "";
-        status.style.display = "block";
-        status.textContent = "Mahsulot topilmadi";
-        return;
-      }
-
-      status.style.display = "none";
-
-      grid.innerHTML = filtered.map(p => `
-        <article class="card">
-          <div class="img-wrap">
-            <img src="${p.image || "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=900"}" alt="${p.name || "Mahsulot"}" loading="lazy">
-            <div class="category">${p.category || "Shirinlik"}</div>
-          </div>
-          <div class="content">
-            <div class="row">
-              <h4>${p.name || "Nomsiz mahsulot"}</h4>
-              <div class="price">${Number(p.price || 0).toLocaleString()} s.</div>
-            </div>
-            <p class="desc">${p.description || ""}</p>
-          </div>
-        </article>
-      `).join("");
-    }
-
-    searchInput.addEventListener("input", renderProducts);
-  </script>
 </body>
 </html>
