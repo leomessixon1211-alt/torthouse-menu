@@ -2,199 +2,406 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tort House - Shuning lahzalar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tort House - Online Menu</title>
+    <!-- Tailwind CSS for modern layout -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cream: '#FDFBF7',
-                        chocolate: '#3D2B1F',
-                        gold: '#D4AF37',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Google Fonts: Playfair Display for Elegance, Inter for Readability -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --burgundy: #72001A;
+            --cream: #FDFBF7;
+            --ivory: #FFFFFF;
+            --beige: #F5F1E9;
+            --chocolate: #3D2B1F;
+            --gold: #D4AF37;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--cream);
+            color: var(--chocolate);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .serif { font-family: 'Playfair Display', serif; }
+
+        /* Splash Screen Animation */
+        #splash {
+            background-color: var(--burgundy);
+            transition: opacity 0.5s ease-in-out, visibility 0.5s;
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Hide scrollbar but keep functionality */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Custom UI Elements */
+        .category-chip.active {
+            background-color: var(--burgundy);
+            color: white;
+            box-shadow: 0 4px 12px rgba(114, 0, 26, 0.2);
+        }
+
+        .product-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .product-card:active {
+            transform: scale(0.98);
+        }
+
+        .btn-burgundy {
+            background-color: var(--burgundy);
+            color: white;
+        }
+
+        /* Bottom Sheet */
+        #cart-sheet {
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #cart-sheet.open {
+            transform: translateY(0);
+        }
+
+        /* Image aspect ratio guard */
+        .img-container {
+            position: relative;
+            padding-bottom: 100%;
+            overflow: hidden;
+            border-radius: 1.5rem;
+        }
+
+        .img-container img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     </style>
 </head>
-<body class="bg-cream text-chocolate font-sans">
-    <div id="app">
-        <!-- Hero Section -->
-        <header class="relative h-[35vh] flex items-center justify-center overflow-hidden">
-            <div class="absolute inset-0 bg-black/40 z-10"></div>
-            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=1000" class="absolute inset-0 w-full h-full object-cover">
-            <div class="relative z-20 text-center px-4">
-                <h1 class="text-5xl font-serif italic text-white mb-2">Tort House</h1>
-                <p class="text-white/90 text-sm tracking-widest italic font-light">Shirin lahzalar shu yerdan boshlanadi</p>
+<body class="overflow-x-hidden">
+
+    <!-- Splash Screen -->
+    <div id="splash" class="fixed inset-0 z-[100] flex flex-col items-center justify-center p-12 overflow-hidden">
+        <div class="fade-in-up flex flex-col items-center text-center">
+            <!-- Note: Ensure logo.png exists in your root folder -->
+            <img src="logo.png" alt="Tort House Logo" class="w-64 h-64 object-contain mb-4">
+            <p class="text-white text-2xl serif italic opacity-90">Mehr bilan!</p>
+        </div>
+    </div>
+
+    <!-- Main Content (Hidden initially) -->
+    <div id="app" class="hidden opacity-0 transition-opacity duration-700 pb-32">
+        
+        <!-- Header / Hero -->
+        <header class="bg-[#72001A] pt-12 pb-16 px-6 relative rounded-b-[3rem] shadow-2xl">
+            <div class="max-w-md mx-auto flex flex-col items-center text-center">
+                <img src="logo.png" alt="Logo" class="w-32 h-32 mb-4 drop-shadow-lg">
+                <h1 class="text-white text-4xl serif font-bold mb-1">Tort House</h1>
+                <p class="text-white/80 italic text-sm serif">Shirin lahzalar shu yerdan boshlanadi</p>
             </div>
         </header>
 
-        <!-- Search & Filter -->
-        <div class="max-w-xl mx-auto px-4 -mt-8 relative z-30">
-            <div class="bg-white rounded-2xl shadow-xl p-4 flex flex-col gap-4">
-                <input id="search-input" type="text" placeholder="Qidirish..." class="w-full bg-gray-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-gold/30 outline-none">
-                <div id="category-btns" class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                    <!-- Categories injected here -->
+        <!-- Search & Filter Section -->
+        <div class="max-w-md mx-auto px-6 -mt-8 relative z-10">
+            <!-- Search Bar -->
+            <div class="bg-white rounded-2xl shadow-xl p-2 mb-6 flex items-center border border-beige">
+                <div class="pl-4 pr-2 text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 </div>
+                <input type="text" id="search-input" placeholder="Shirinlik qidirish..." class="w-full py-3 bg-transparent outline-none text-chocolate font-medium placeholder-gray-300">
+            </div>
+
+            <!-- Categories -->
+            <div id="category-list" class="flex gap-3 overflow-x-auto no-scrollbar pb-2 mb-6">
+                <button class="category-chip active px-6 py-2.5 rounded-full bg-white text-chocolate font-bold text-sm whitespace-nowrap shadow-sm border border-beige transition-all" data-category="Hammasi">Hammasi</button>
+                <!-- Dynamically populated -->
             </div>
         </div>
 
         <!-- Product Grid -->
-        <main class="max-w-xl mx-auto px-4 py-8 grid grid-cols-2 gap-4" id="product-grid">
-            <!-- Products injected here -->
-        </main>
+        <div id="product-grid" class="max-w-md mx-auto px-6 grid grid-cols-1 gap-8">
+            <!-- Loading State -->
+            <div id="loading" class="flex flex-col items-center justify-center py-20 opacity-50">
+                <div class="w-10 h-10 border-4 border-burgundy border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p class="text-chocolate font-medium">Mazali menyu yuklanmoqda...</p>
+            </div>
+        </div>
 
-        <!-- Sticky Cart Button -->
-        <div id="cart-btn" class="fixed bottom-6 left-4 right-4 z-40 hidden">
-            <button onclick="toggleCart(true)" class="w-full bg-chocolate text-white py-4 px-6 rounded-2xl shadow-2xl flex items-center justify-between">
-                <span class="font-bold flex items-center gap-2">
-                    <span id="cart-count" class="bg-gold text-chocolate w-6 h-6 rounded-full flex items-center justify-center text-xs">0</span>
-                    Tanlanganlar
-                </span>
-                <span id="cart-total" class="font-bold">0 sum</span>
+        <!-- Empty State (Hidden) -->
+        <div id="empty-state" class="hidden text-center py-20 px-10">
+            <span class="text-5xl mb-4 block">🧁</span>
+            <h3 class="text-xl font-bold text-chocolate mb-2">Hech narsa topilmadi</h3>
+            <p class="text-gray-400 text-sm">Boshqa kalit so'z yoki kategorya tanlab ko'ring</p>
+        </div>
+
+    </div>
+
+    <!-- Sticky Bottom Bar -->
+    <div id="sticky-bar" class="fixed bottom-0 left-0 right-0 p-6 z-40 transform translate-y-32 transition-transform duration-500 pointer-events-none">
+        <button id="view-cart-btn" class="pointer-events-auto w-full max-w-md mx-auto btn-burgundy h-16 rounded-2xl shadow-2xl flex items-center justify-between px-6 active:scale-95 transition-all">
+            <div class="flex items-center gap-3">
+                <div id="cart-count" class="bg-ivory text-burgundy w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm">0</div>
+                <span class="font-bold tracking-wide uppercase text-xs">Tanlanganlar</span>
+            </div>
+            <span id="cart-total" class="font-black text-lg">0 sum</span>
+        </button>
+    </div>
+
+    <!-- Cart Bottom Sheet Overlay -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/60 z-[50] hidden backdrop-blur-sm"></div>
+    
+    <div id="cart-sheet" class="fixed bottom-0 left-0 right-0 z-[60] bg-cream rounded-t-[2.5rem] shadow-[0_-20px_50px_rgba(0,0,0,0.1)] flex flex-col max-h-[90vh]">
+        <!-- Anchor Handle -->
+        <div class="h-1.5 w-12 bg-gray-200 rounded-full mx-auto my-4"></div>
+        
+        <div class="px-8 pb-4 flex justify-between items-center border-b border-beige">
+            <h2 class="text-2xl serif font-black text-burgundy">Buyurtmangiz</h2>
+            <button id="close-cart" class="p-2 text-gray-400 hover:text-burgundy">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
         </div>
 
-        <!-- Cart View (Modal) -->
-        <div id="cart-modal" class="fixed inset-0 z-50 hidden">
-            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleCart(false)"></div>
-            <div class="absolute bottom-0 left-0 right-0 max-w-xl mx-auto bg-white rounded-t-[2.5rem] h-[85vh] flex flex-col p-6 shadow-2xl animate-slide-up">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-serif font-bold">Buyurtmangiz</h2>
-                    <button onclick="toggleCart(false)" class="p-2">✕</button>
+        <div id="cart-items" class="flex-grow overflow-y-auto p-8 space-y-6 no-scrollbar">
+            <!-- Items go here -->
+        </div>
+
+        <div class="p-8 bg-ivory rounded-t-[2rem] shadow-inner">
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mb-1">Jami Summa</p>
+                    <p id="sheet-total" class="text-3xl font-black text-burgundy leading-none">0 sum</p>
                 </div>
-                <div id="cart-items" class="flex-grow overflow-y-auto space-y-4">
-                    <!-- Cart items injected here -->
-                </div>
-                <div class="mt-6 pt-6 border-t font-serif">
-                    <div class="flex justify-between text-2xl font-bold mb-6">
-                        <span>Jami:</span>
-                        <span id="final-total">0 sum</span>
-                    </div>
-                    <p class="text-gray-400 text-xs text-center mb-4">Ushbu ro'yxatni kassirga ko'rsating</p>
-                </div>
+                <p class="text-[10px] text-right italic text-gray-400 w-32 leading-tight">Ushbu ro'yxatni kassirga ko'rsating</p>
+            </div>
+            <div class="bg-beige/50 p-4 rounded-xl text-center border border-dashed border-burgundy/20 mb-6">
+                <p class="text-xs font-medium text-chocolate">Buyurtma berish uchun telefoningizni xodimga ko'rsating</p>
             </div>
         </div>
     </div>
 
-    <!-- Firebase Integration -->
+    <!-- Firebase SDK v9+ -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // !!! PASTE YOUR FIREBASE CONFIG HERE !!!
+        // Your Firebase configuration
         const firebaseConfig = {
-            apiKey: "PASTE_YOUR_API_KEY",
-            authDomain: "PASTE_YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "PASTE_YOUR_PROJECT_ID",
-            storageBucket: "PASTE_YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "PASTE_YOUR_SENDER_ID",
-            appId: "PASTE_YOUR_APP_ID"
+            apiKey: "AIzaSyCsx23vnQ4jvGv0reltApc4fEvhF9VHKIU",
+            authDomain: "tort-house.firebaseapp.com",
+            projectId: "tort-house",
+            storageBucket: "tort-house.firebasestorage.app",
+            messagingSenderId: "531646484923",
+            appId: "1:531646484923:web:e40a50fabf50519d9ab49e"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let allProducts = [];
+        // State Management
+        let products = [];
         let cart = [];
-        let activeCategory = 'Hammasi';
+        let currentCategory = "Hammasi";
+        let searchTerm = "";
 
-        onSnapshot(query(collection(db, "products"), where("available", "==", true)), (snapshot) => {
-            allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderProducts();
-            renderCategories();
+        // Splash screen logic
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash');
+                const mainApp = document.getElementById('app');
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.classList.add('hidden');
+                    mainApp.classList.remove('hidden');
+                    mainApp.classList.add('opacity-100');
+                }, 500);
+            }, 1000); // 1-second splash
         });
 
-        function renderCategories() {
-            const cats = ['Hammasi', ...new Set(allProducts.map(p => p.category))];
-            const container = document.getElementById('category-btns');
-            container.innerHTML = cats.map(c => `
-                <button onclick="setCategory('${c}')" class="px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium ${activeCategory === c ? 'bg-chocolate text-white' : 'bg-gray-100'}">${c}</button>
-            `).join('');
-        }
-
-        window.setCategory = (cat) => {
-            activeCategory = cat;
-            renderProducts();
+        // 1. Fetch Products Real-time
+        const q = query(collection(db, "products"), where("available", "==", true));
+        onSnapshot(q, (snapshot) => {
+            products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderCategories();
+            renderProducts();
+            document.getElementById('loading').classList.add('hidden');
+        });
+
+        // 2. Render Functions
+        function renderCategories() {
+            const categories = ["Hammasi", ...new Set(products.map(p => p.category))];
+            const list = document.getElementById('category-list');
+            list.innerHTML = categories.map(cat => `
+                <button class="category-chip ${currentCategory === cat ? 'active' : ''} px-6 py-2.5 rounded-full bg-white text-chocolate font-bold text-sm whitespace-nowrap shadow-sm border border-beige transition-all" data-category="${cat}">
+                    ${cat}
+                </button>
+            `).join('');
+
+            // Click events
+            document.querySelectorAll('.category-chip').forEach(btn => {
+                btn.onclick = () => {
+                    currentCategory = btn.getAttribute('data-category');
+                    renderCategories();
+                    renderProducts();
+                };
+            });
         }
 
         function renderProducts() {
-            const query = document.getElementById('search-input').value.toLowerCase();
             const grid = document.getElementById('product-grid');
-            const filtered = allProducts.filter(p => 
-                (activeCategory === 'Hammasi' || p.category === activeCategory) &&
-                (p.name.toLowerCase().includes(query) || p.description.toLowerCase().includes(query))
-            );
+            const empty = document.getElementById('empty-state');
+            
+            const filtered = products.filter(p => {
+                const matchesCat = currentCategory === "Hammasi" || p.category === currentCategory;
+                const matchesSearch = p.name.toLowerCase().includes(searchTerm) || p.description.toLowerCase().includes(searchTerm);
+                return matchesCat && matchesSearch;
+            });
 
-            grid.innerHTML = filtered.map(p => `
-                <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 flex flex-col">
-                    <img src="${p.image}" class="w-full aspect-square object-cover">
-                    <div class="p-3 flex-grow flex flex-col">
-                        <h3 class="font-serif font-bold text-sm leading-tight mb-1">${p.name}</h3>
-                        <p class="text-gold font-bold text-sm mb-3">${p.price.toLocaleString()} so'm</p>
-                        <button onclick="addToCart('${p.id}')" class="mt-auto w-full py-2 bg-cream rounded-xl text-xs font-bold border border-chocolate/10">+ Savatchaga</button>
+            if (filtered.length === 0) {
+                grid.innerHTML = "";
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            grid.innerHTML = filtered.map(p => {
+                const cartItem = cart.find(item => item.id === p.id);
+                const count = cartItem ? cartItem.quantity : 0;
+
+                return `
+                <div class="product-card bg-ivory rounded-[2.5rem] p-4 shadow-[0_20px_40px_rgba(61,43,31,0.05)] border border-beige flex flex-col">
+                    <div class="img-container mb-4">
+                        <img src="${p.image || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=1000'}" alt="${p.name}">
+                    </div>
+                    
+                    <div class="px-2 flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="serif text-xl font-black text-chocolate leading-tight">${p.name}</h3>
+                            <span class="text-burgundy font-black text-lg bg-burgundy/5 px-2 rounded-lg">${p.price.toLocaleString()} s.</span>
+                        </div>
+                        <p class="text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-2">${p.category}</p>
+                        <p class="text-gray-400 text-xs line-clamp-2 leading-relaxed mb-6">${p.description}</p>
+                    </div>
+
+                    <div class="mt-auto px-1 pb-2">
+                        ${count === 0 ? `
+                            <button onclick="addToCart('${p.id}')" class="w-full bg-[#F5F1E9] text-burgundy h-14 rounded-2xl font-black flex items-center justify-center gap-3 active:bg-burgundy active:text-white transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                                Tanlash
+                            </button>
+                        ` : `
+                            <div class="flex items-center gap-4 h-14">
+                                <button onclick="updateQty('${p.id}', -1)" class="w-14 h-14 bg-beige text-burgundy rounded-2xl flex items-center justify-center font-black active:bg-burgundy/10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+                                </button>
+                                <span class="flex-grow text-center text-xl font-black text-chocolate">${count}</span>
+                                <button onclick="updateQty('${p.id}', 1)" class="w-14 h-14 bg-burgundy text-white rounded-2xl flex items-center justify-center font-black shadow-lg shadow-burgundy/30 active:scale-95">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                                </button>
+                            </div>
+                        `}
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
+        // 3. Cart Logic
         window.addToCart = (id) => {
-            const p = allProducts.find(x => x.id === id);
-            const existing = cart.find(x => x.id === id);
-            if (existing) existing.quantity++;
-            else cart.push({ ...p, quantity: 1 });
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-            const count = cart.reduce((s, i) => s + i.quantity, 0);
-            
-            document.getElementById('cart-btn').style.display = count > 0 ? 'block' : 'none';
-            document.getElementById('cart-count').innerText = count;
-            document.getElementById('cart-total').innerText = total.toLocaleString() + ' sum';
-            document.getElementById('final-total').innerText = total.toLocaleString() + ' sum';
-            
-            document.getElementById('cart-items').innerHTML = cart.map(item => `
-                <div class="flex gap-4">
-                    <img src="${item.image}" class="w-16 h-16 rounded-xl object-cover">
-                    <div class="flex-grow">
-                        <h4 class="font-bold text-sm">${item.name}</h4>
-                        <p class="text-gold font-bold text-xs">${item.price.toLocaleString()} x ${item.quantity}</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="updateQty('${item.id}', -1)" class="w-8 h-8 rounded-full bg-gray-100">-</button>
-                        <span class="font-bold">${item.quantity}</span>
-                        <button onclick="updateQty('${item.id}', 1)" class="w-8 h-8 rounded-full bg-gray-100">+</button>
-                    </div>
-                </div>
-            `).join('');
-        }
+            const product = products.find(p => p.id === id);
+            cart.push({ ...product, quantity: 1 });
+            updateUI();
+        };
 
         window.updateQty = (id, delta) => {
-            const item = cart.find(x => x.id === id);
-            item.quantity += delta;
-            if (item.quantity <= 0) cart = cart.filter(x => x.id !== id);
-            updateCartUI();
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+                updateUI();
+            }
+        };
+
+        function updateUI() {
+            renderProducts();
+            
+            const count = cart.reduce((acc, item) => acc + item.quantity, 0);
+            const total = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            
+            const stickyBar = document.getElementById('sticky-bar');
+            if (count > 0) {
+                stickyBar.classList.remove('translate-y-32');
+            } else {
+                stickyBar.classList.add('translate-y-32');
+                closeCart();
+            }
+
+            document.getElementById('cart-count').textContent = count;
+            document.getElementById('cart-total').textContent = total.toLocaleString() + ' sum';
+            document.getElementById('sheet-total').textContent = total.toLocaleString() + ' sum';
+
+            renderCartSheet();
         }
 
-        window.toggleCart = (show) => {
-            document.getElementById('cart-modal').style.display = show ? 'block' : 'none';
+        function renderCartSheet() {
+            const container = document.getElementById('cart-items');
+            container.innerHTML = cart.map(item => `
+                <div class="flex items-center gap-4">
+                    <img src="${item.image}" class="w-16 h-16 rounded-xl object-cover border border-beige shadow-sm" alt="">
+                    <div class="flex-grow">
+                        <p class="font-bold text-chocolate italic serif">${item.name}</p>
+                        <p class="text-xs text-burgundy font-black">${item.price.toLocaleString()} s. x ${item.quantity}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-black text-chocolate">${(item.price * item.quantity).toLocaleString()} s.</p>
+                        <button onclick="updateQty('${item.id}', -1)" class="text-[10px] font-bold text-gray-400 underline uppercase tracking-tighter">O'chirish</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        document.getElementById('search-input').addEventListener('input', renderProducts);
+        // 4. UI Handlers
+        document.getElementById('search-input').oninput = (e) => {
+            searchTerm = e.target.value.toLowerCase();
+            renderProducts();
+        };
+
+        const viewCartBtn = document.getElementById('view-cart-btn');
+        const cartSheet = document.getElementById('cart-sheet');
+        const cartOverlay = document.getElementById('cart-overlay');
+        const closeCartBtn = document.getElementById('close-cart');
+
+        function openCart() {
+            cartSheet.classList.add('open');
+            cartOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCart() {
+            cartSheet.classList.remove('open');
+            cartOverlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        viewCartBtn.onclick = openCart;
+        closeCartBtn.onclick = closeCart;
+        cartOverlay.onclick = closeCart;
     </script>
 </body>
 </html>
