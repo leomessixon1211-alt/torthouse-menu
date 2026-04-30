@@ -1,203 +1,200 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tort House Menu</title>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #fff8f1;
-      color: #2b160d;
-    }
-
-    .hero {
-      padding: 28px 18px;
-      background: linear-gradient(135deg, #3b1f14, #8b4a2f);
-      color: white;
-      border-bottom-left-radius: 30px;
-      border-bottom-right-radius: 30px;
-    }
-
-    .hero h1 {
-      margin: 0;
-      font-size: 34px;
-    }
-
-    .hero p {
-      margin-top: 8px;
-      color: #ffe1c7;
-    }
-
-    .search {
-      margin: 18px;
-    }
-
-    .search input {
-      width: 100%;
-      padding: 15px;
-      border-radius: 16px;
-      border: none;
-      font-size: 16px;
-      box-shadow: 0 5px 18px rgba(0,0,0,0.08);
-    }
-
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 18px;
-      padding: 18px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 22px;
-      overflow: hidden;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-    }
-
-    .card img {
-      width: 100%;
-      height: 190px;
-      object-fit: cover;
-    }
-
-    .card-content {
-      padding: 16px;
-    }
-
-    .category {
-      font-size: 13px;
-      color: #a36b48;
-      font-weight: bold;
-    }
-
-    .card h2 {
-      margin: 7px 0;
-      font-size: 21px;
-    }
-
-    .card p {
-      color: #6b5145;
-      font-size: 14px;
-    }
-
-    .price {
-      font-size: 20px;
-      font-weight: bold;
-      margin-top: 12px;
-      color: #7a351f;
-    }
-
-    .btn {
-      margin-top: 12px;
-      width: 100%;
-      padding: 13px;
-      border: none;
-      border-radius: 14px;
-      background: #3b1f14;
-      color: white;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    .loading {
-      padding: 30px;
-      text-align: center;
-      font-size: 18px;
-    }
-  </style>
-</head>
-
-<body>
-
-  <div class="hero">
-    <h1>Tort House</h1>
-    <p>Shirin lahzalar shu yerdan boshlanadi</p>
-  </div>
-
-  <div class="search">
-    <input id="searchInput" type="text" placeholder="Mahsulot qidirish..." />
-  </div>
-
-  <div id="products" class="products">
-    <div class="loading">Menu yuklanmoqda...</div>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCsx23vnQ4jvGv0reltApc4fEvhF9VHKIU",
-      authDomain: "tort-house.firebaseapp.com",
-      projectId: "tort-house",
-      storageBucket: "tort-house.firebasestorage.app",
-      messagingSenderId: "531646484923",
-      appId: "1:531646484923:web:e40a50fabf50519d9ab49e"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const productsDiv = document.getElementById("products");
-    const searchInput = document.getElementById("searchInput");
-
-    let products = [];
-
-    async function loadProducts() {
-      const querySnapshot = await getDocs(collection(db, "products"));
-      products = [];
-
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.available !== false) {
-          products.push(data);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tort House - Shuning lahzalar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#FDFBF7',
+                        chocolate: '#3D2B1F',
+                        gold: '#D4AF37',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
         }
-      });
-
-      renderProducts(products);
-    }
-
-    function renderProducts(items) {
-      if (items.length === 0) {
-        productsDiv.innerHTML = `<div class="loading">Mahsulot topilmadi</div>`;
-        return;
-      }
-
-      productsDiv.innerHTML = "";
-
-      items.forEach((item) => {
-        productsDiv.innerHTML += `
-          <div class="card">
-            <img src="${item.image}" alt="${item.name}">
-            <div class="card-content">
-              <div class="category">${item.category || "Shirinlik"}</div>
-              <h2>${item.name}</h2>
-              <p>${item.description || ""}</p>
-              <div class="price">${Number(item.price).toLocaleString()} so'm</div>
-              <button class="btn">Kassirga ko‘rsatish</button>
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-cream text-chocolate font-sans">
+    <div id="app">
+        <!-- Hero Section -->
+        <header class="relative h-[35vh] flex items-center justify-center overflow-hidden">
+            <div class="absolute inset-0 bg-black/40 z-10"></div>
+            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=1000" class="absolute inset-0 w-full h-full object-cover">
+            <div class="relative z-20 text-center px-4">
+                <h1 class="text-5xl font-serif italic text-white mb-2">Tort House</h1>
+                <p class="text-white/90 text-sm tracking-widest italic font-light">Shirin lahzalar shu yerdan boshlanadi</p>
             </div>
-          </div>
-        `;
-      });
-    }
+        </header>
 
-    searchInput.addEventListener("input", () => {
-      const value = searchInput.value.toLowerCase();
+        <!-- Search & Filter -->
+        <div class="max-w-xl mx-auto px-4 -mt-8 relative z-30">
+            <div class="bg-white rounded-2xl shadow-xl p-4 flex flex-col gap-4">
+                <input id="search-input" type="text" placeholder="Qidirish..." class="w-full bg-gray-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-gold/30 outline-none">
+                <div id="category-btns" class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                    <!-- Categories injected here -->
+                </div>
+            </div>
+        </div>
 
-      const filtered = products.filter(item =>
-        item.name.toLowerCase().includes(value) ||
-        item.category.toLowerCase().includes(value)
-      );
+        <!-- Product Grid -->
+        <main class="max-w-xl mx-auto px-4 py-8 grid grid-cols-2 gap-4" id="product-grid">
+            <!-- Products injected here -->
+        </main>
 
-      renderProducts(filtered);
-    });
+        <!-- Sticky Cart Button -->
+        <div id="cart-btn" class="fixed bottom-6 left-4 right-4 z-40 hidden">
+            <button onclick="toggleCart(true)" class="w-full bg-chocolate text-white py-4 px-6 rounded-2xl shadow-2xl flex items-center justify-between">
+                <span class="font-bold flex items-center gap-2">
+                    <span id="cart-count" class="bg-gold text-chocolate w-6 h-6 rounded-full flex items-center justify-center text-xs">0</span>
+                    Tanlanganlar
+                </span>
+                <span id="cart-total" class="font-bold">0 sum</span>
+            </button>
+        </div>
 
-    loadProducts();
-  </script>
+        <!-- Cart View (Modal) -->
+        <div id="cart-modal" class="fixed inset-0 z-50 hidden">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleCart(false)"></div>
+            <div class="absolute bottom-0 left-0 right-0 max-w-xl mx-auto bg-white rounded-t-[2.5rem] h-[85vh] flex flex-col p-6 shadow-2xl animate-slide-up">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-serif font-bold">Buyurtmangiz</h2>
+                    <button onclick="toggleCart(false)" class="p-2">✕</button>
+                </div>
+                <div id="cart-items" class="flex-grow overflow-y-auto space-y-4">
+                    <!-- Cart items injected here -->
+                </div>
+                <div class="mt-6 pt-6 border-t font-serif">
+                    <div class="flex justify-between text-2xl font-bold mb-6">
+                        <span>Jami:</span>
+                        <span id="final-total">0 sum</span>
+                    </div>
+                    <p class="text-gray-400 text-xs text-center mb-4">Ushbu ro'yxatni kassirga ko'rsating</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Firebase Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        // !!! PASTE YOUR FIREBASE CONFIG HERE !!!
+        const firebaseConfig = {
+            apiKey: "PASTE_YOUR_API_KEY",
+            authDomain: "PASTE_YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "PASTE_YOUR_PROJECT_ID",
+            storageBucket: "PASTE_YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "PASTE_YOUR_SENDER_ID",
+            appId: "PASTE_YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let allProducts = [];
+        let cart = [];
+        let activeCategory = 'Hammasi';
+
+        onSnapshot(query(collection(db, "products"), where("available", "==", true)), (snapshot) => {
+            allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderProducts();
+            renderCategories();
+        });
+
+        function renderCategories() {
+            const cats = ['Hammasi', ...new Set(allProducts.map(p => p.category))];
+            const container = document.getElementById('category-btns');
+            container.innerHTML = cats.map(c => `
+                <button onclick="setCategory('${c}')" class="px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium ${activeCategory === c ? 'bg-chocolate text-white' : 'bg-gray-100'}">${c}</button>
+            `).join('');
+        }
+
+        window.setCategory = (cat) => {
+            activeCategory = cat;
+            renderProducts();
+            renderCategories();
+        }
+
+        function renderProducts() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const grid = document.getElementById('product-grid');
+            const filtered = allProducts.filter(p => 
+                (activeCategory === 'Hammasi' || p.category === activeCategory) &&
+                (p.name.toLowerCase().includes(query) || p.description.toLowerCase().includes(query))
+            );
+
+            grid.innerHTML = filtered.map(p => `
+                <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 flex flex-col">
+                    <img src="${p.image}" class="w-full aspect-square object-cover">
+                    <div class="p-3 flex-grow flex flex-col">
+                        <h3 class="font-serif font-bold text-sm leading-tight mb-1">${p.name}</h3>
+                        <p class="text-gold font-bold text-sm mb-3">${p.price.toLocaleString()} so'm</p>
+                        <button onclick="addToCart('${p.id}')" class="mt-auto w-full py-2 bg-cream rounded-xl text-xs font-bold border border-chocolate/10">+ Savatchaga</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.addToCart = (id) => {
+            const p = allProducts.find(x => x.id === id);
+            const existing = cart.find(x => x.id === id);
+            if (existing) existing.quantity++;
+            else cart.push({ ...p, quantity: 1 });
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+            const count = cart.reduce((s, i) => s + i.quantity, 0);
+            
+            document.getElementById('cart-btn').style.display = count > 0 ? 'block' : 'none';
+            document.getElementById('cart-count').innerText = count;
+            document.getElementById('cart-total').innerText = total.toLocaleString() + ' sum';
+            document.getElementById('final-total').innerText = total.toLocaleString() + ' sum';
+            
+            document.getElementById('cart-items').innerHTML = cart.map(item => `
+                <div class="flex gap-4">
+                    <img src="${item.image}" class="w-16 h-16 rounded-xl object-cover">
+                    <div class="flex-grow">
+                        <h4 class="font-bold text-sm">${item.name}</h4>
+                        <p class="text-gold font-bold text-xs">${item.price.toLocaleString()} x ${item.quantity}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="updateQty('${item.id}', -1)" class="w-8 h-8 rounded-full bg-gray-100">-</button>
+                        <span class="font-bold">${item.quantity}</span>
+                        <button onclick="updateQty('${item.id}', 1)" class="w-8 h-8 rounded-full bg-gray-100">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.updateQty = (id, delta) => {
+            const item = cart.find(x => x.id === id);
+            item.quantity += delta;
+            if (item.quantity <= 0) cart = cart.filter(x => x.id !== id);
+            updateCartUI();
+        }
+
+        window.toggleCart = (show) => {
+            document.getElementById('cart-modal').style.display = show ? 'block' : 'none';
+        }
+
+        document.getElementById('search-input').addEventListener('input', renderProducts);
+    </script>
 </body>
 </html>
