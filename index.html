@@ -4,7 +4,47 @@
   <title>Tort House Menu</title>
 </head>
 <body>
-  <h1>Tort House Menu</h1>
-  <p>Tez orada ishga tushadi...</p>
+
+<h1>Tort House Menu</h1>
+<div id="menu"></div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+
+<script>
+  // Sening config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCsx23vnQ4jvGv0reltApc4fEvhF9VHKIU",
+    authDomain: "tort-house.firebaseapp.com",
+    projectId: "tort-house",
+    storageBucket: "tort-house.firebasestorage.app",
+    messagingSenderId: "531646484923",
+    appId: "1:531646484923:web:e40a50fabf50519d9ab49e"
+  };
+
+  // Firebase initialize
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const menuDiv = document.getElementById("menu");
+
+  // Database'dan o‘qish
+  db.collection("products").get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+
+      menuDiv.innerHTML += `
+        <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+          <h3>${data.name}</h3>
+          <img src="${data.image}" width="200"/>
+          <p>${data.description}</p>
+          <b>${data.price} so'm</b>
+        </div>
+      `;
+    });
+  });
+</script>
+
 </body>
 </html>
